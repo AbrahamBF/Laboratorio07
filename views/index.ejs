@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/style.css">
+
+    <title>CRUD MongoDB</title>
+</head>
+<body>
+    <nav class="navbar bg-primary navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand link-warning fs-3" href="#">Stack</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarScroll">
+                <ul class="navbar-nav mx-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
+                    <li class="nav-item">
+                        <a class="nav-link link-light" aria-current="page" href="#">Inicio</a>
+                    </li>
+
+                    <!-- Resto de elementos de la barra de navegación -->
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle link-light" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Almacen</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Kardex</a></li> 
+                            <li><a class="dropdown-item" href="#">Producto</a></li>
+                            <li><a class="dropdown-item" href="#">Categoría</a></li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Search">
+                    <button class="btn btn-outline-light" type="submit">Búsqueda</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="margin-top: 50px;">
+        <br>
+        <br>
+        <a href="#" class="btnNuevo btn btn-danger">Nuevo Cliente</a>
+
+        <!-- Tabla Clientes -->
+        <table id="tablaClientes" class="table mt-4 table-hover">
+            <thead class="table-info">
+                <tr>
+                    <th style="display: none;">ID</th>
+                    <th>Nombre</th>
+                    <th>Apellidos</th>
+                    <th>Direccion</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% clientes.forEach((cliente)=> { %>
+                <tr>
+                    <td style="display: none;">
+                        <%= cliente._id %>
+                    </td>
+                    <td>
+                        <%= cliente.nombre %>
+                    </td>
+                    <td>
+                        <%= cliente.apellidos %>
+                    </td>
+                    <td>
+                        <%= cliente.direccion %>
+                    </td>
+                    <td>
+                        <a href="#" class="btnEditar btn btn-outline-primary bi bi-pencil"></a>
+                        <a href="/borrar/<%= cliente._id %>" class="btn btn-outline-danger bi bi-trash"></a>
+                    </td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Modal para Guardar-->
+<div class="modal fade" id="modalClienteNuevo" tabindex="-1" aria-labelledby="modalClienteNuevo" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="exampleModalLabel">Nuevo Cliente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Formulario para crear un nuevo cliente -->
+                <form id="formNuevoCliente" action="/crear" method="POST">
+                    <div class="mb-3">
+                        <label for="nombreNuevo" class="form-label">Nombre</label>
+                        <input id="nombreNuevo" name="nombre" type="text" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="apellidosNuevo" class="form-label">Apellidos</label>
+                        <input id="apellidosNuevo" name="apellidos" type="text" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="direccionNuevo" class="form-label">Dirección</label>
+                        <input id="direccionNuevo" name="direccion" type="text" class="form-control" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnGuardarNuevo">Guardar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Editar-->
+<div class="modal fade" id="modalCliente" tabindex="-1" aria-labelledby="modalCliente" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="exampleModalLabel">Editar Cliente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Formulario para editar un cliente -->
+                <form id="formEditarCliente" action="/editar" method="POST">
+                    <input type="hidden" id="idEditar" name="id_editar">
+                    <div class="mb-3">
+                        <label for="nombreEditar" class="form-label">Nombre</label>
+                        <input id="nombreEditar" name="nombre_editar" type="text" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="apellidosEditar" class="form-label">Apellidos</label>
+                        <input id="apellidosEditar" name="apellidos_editar" type="text" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="direccionEditar" class="form-label">Dirección</label>
+                        <input id="direccionEditar" name="direccion_editar" type="text" class="form-control" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnActualizar">Actualizar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/code.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.btnNuevo').click(function () {
+            $('#modalClienteNuevo').modal('show');
+        });
+
+        $('#btnGuardarNuevo').click(function () {
+            $('#formNuevoCliente').submit();
+        });
+
+        $('.btnEditar').click(function () {
+            var id = $(this).closest('tr').find('td:first-child').text().trim();
+            var nombre = $(this).closest('tr').find('td:nth-child(2)').text().trim();
+            var apellidos = $(this).closest('tr').find('td:nth-child(3)').text().trim();
+            var direccion = $(this).closest('tr').find('td:nth-child(4)').text().trim();
+
+            $('#idEditar').val(id);
+            $('#nombreEditar').val(nombre);
+            $('#apellidosEditar').val(apellidos);
+            $('#direccionEditar').val(direccion);
+
+            $('#modalCliente').modal('show');
+        });
+
+        $('#btnActualizar').click(function () {
+            $('#formEditarCliente').submit();
+        });
+        
+    });
+</script>
+</body>
+</html>
